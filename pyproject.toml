@@ -1,0 +1,15 @@
+[project]
+name = "plantrnafm-sae-training"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=0.20.31",
+    "torch>=2.3.1",
+    "transformers>=4.41.2",
+    "nnsight>=0.2.1",
+    "dictionary_learning @ git+https://github.com/saprmarks/dictionary_learning.git",
+    "trackio",
+    "wandb>=0.17.0",
+]
