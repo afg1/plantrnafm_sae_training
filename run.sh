@@ -24,4 +24,14 @@ source .venv/bin/activate
 export TRACKIO_DIR=/hps/nobackup/agb/rnacentral/agreen/ARISE/mech_interp/plantrnafm_sae_training/trackio
 
 
-python main.py
+
+layers=(3 6 9 12)
+sparsities=(32 64 128 256 512)
+
+for layer in "${layers[@]}"; do
+    for sparsity in "${sparsities[@]}"; do
+        echo "Starting training for layer $layer with sparsity $sparsity"
+        python main.py --layer "$layer" --sparsity "$sparsity" --device cuda --training_steps 10000 --base_save_dir trained_saes
+        echo "Finished training for layer $layer with sparsity $sparsity"
+    done
+done

@@ -111,18 +111,16 @@ def train_sae_for_config(
 def main():
     parser = argparse.ArgumentParser(description="Train a suite of Sparse Autoencoders for plantRNAFM.")
     parser.add_argument(
-        "--layers",
-        nargs="+",
+        "--layer",,
         type=int,
-        default=[6, 3, 9, 12],
-        help="List of layers to train SAEs for. Default: 6 3 9 12"
+        default=6,
+        help="Layer to train SAE for. Default: 6"
     )
     parser.add_argument(
-        "--sparsities",
-        nargs="+",
+        "--sparsity",,
         type=int,
-        default=[32, 64, 128, 256, 512],
-        help="List of k-sparsities to train SAEs for. Default: 32 64 128 256 512"
+        default=32,
+        help="k-sparsity to train SAE for. Default: 32"
     )
     parser.add_argument(
         "--device",
@@ -145,15 +143,13 @@ def main():
 
     args = parser.parse_args()
 
-    for layer in args.layers:
-        for k_sparsity in args.sparsities:
-            train_sae_for_config(
-                layer=layer,
-                k_sparsity=k_sparsity,
-                device=args.device,
-                training_steps=args.training_steps,
-                base_save_dir=args.base_save_dir
-            )
+    train_sae_for_config(
+        layer=args.layer,
+        k_sparsity=args.sparsity,
+        device=args.device,
+        training_steps=args.training_steps,
+        base_save_dir=args.base_save_dir
+    )
 
 if __name__ == '__main__':
     main()
