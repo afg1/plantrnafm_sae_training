@@ -111,13 +111,13 @@ def train_sae_for_config(
 def main():
     parser = argparse.ArgumentParser(description="Train a suite of Sparse Autoencoders for plantRNAFM.")
     parser.add_argument(
-        "--layer",,
+        "--layer",
         type=int,
         default=6,
         help="Layer to train SAE for. Default: 6"
     )
     parser.add_argument(
-        "--sparsity",,
+        "--sparsity",
         type=int,
         default=32,
         help="k-sparsity to train SAE for. Default: 32"
