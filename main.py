@@ -27,7 +27,7 @@ from nnsight import LanguageModel
 from dictionary_learning import ActivationBuffer
 from dictionary_learning.trainers.top_k import TopKTrainer, AutoEncoderTopK
 from dictionary_learning.training import trainSAE
-from transformers import AutoModelForMaskedLM
+from transformers import AutoModelForMaskedLM, AutoTokenizer
 
 
 def sequence_generator(data: pl.DataFrame):
@@ -103,7 +103,7 @@ def train_sae_for_config(
         save_dir=save_dir
     )
 
-    print(f"Finished training for Layer: {layer}, k_sparsity: {k_sparsity} with dictionary {dict_size}. SAE saved to {save_dir}")
+    print(f"Finished training for Layer: {layer}, k_sparsity: {k_sparsity} with dictionary {dictionary_size}. SAE saved to {save_dir}")
     # The trainSAE function returns the trained autoencoder, but it also saves it.
     # We can return it here if needed for further processing, or just rely on the saving.
     return ae
