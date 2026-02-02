@@ -23,7 +23,7 @@ source .venv/bin/activate
 
 export TRACKIO_DIR=/hps/nobackup/agb/rnacentral/agreen/ARISE/mech_interp/plantrnafm_sae_training/trackio
 
-
+learning_rates=("1e-8" "1e-7" "1e-6" "1e-5" "1e-4")
 expansions=(16 32 64)
 layers=(0 1 2 3 4 5 6 7 8 9 10 11 12)
 sparsities=(32 64 128 256 512)
