@@ -31,16 +31,12 @@ sparsities=(32 64 128 256 512)
 for expansion in "${expansions[@]}"; do
     for layer in "${layers[@]}"; do
         for sparsity in "${sparsities[@]}"; do
-            echo "Starting training for layer $layer with sparsity $sparsity and expansion $expansion"
-            python main.py --layer "$layer" --sparsity "$sparsity" --expansion_factor "$expansion" --device cuda --training_steps 10000 --base_save_dir trained_saes
-            echo "Finished training for layer $layer with sparsity $sparsity and expansion $expansion"
+            for lr in "${learning_rates[@]}"; do
+                echo "Starting training for layer $layer with sparsity $sparsity and expansion $expansion and learning rate $lr"
+                python main.py --layer "$layer" --sparsity "$sparsity" --expansion_factor "$expansion" --learning_rate "$lr" --device cuda --training_steps 500000 --base_save_dir trained_saes
+                echo "Finished training for layer $layer with sparsity $sparsity and expansion $expansion and learning rate $lr"
+            done
         done
     done
 done
-for layer in "${layers[@]}"; do
-    for sparsity in "${sparsities[@]}"; do
-        echo "Starting training for layer $layer with sparsity $sparsity"
-        python main.py --layer "$layer" --sparsity "$sparsity" --device cuda --training_steps 10000 --base_save_dir trained_saes
-        echo "Finished training for layer $layer with sparsity $sparsity"
-    done
-done
+

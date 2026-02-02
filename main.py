@@ -87,10 +87,11 @@ def train_sae_for_config(
         "lm_name": model_name,
         "warmup_steps": warmup_steps,
         "k": k_sparsity,
-        "wandb_name": f"plantrnafm-layer-{layer}-k-{k_sparsity}"
+        "wandb_name": f"plantrnafm-lr{lr}-dict{dictionary_size}-layer-{layer}-k-{k_sparsity}",
+        "decay_start": 40_000,
     }
 
-    save_dir = os.path.join(base_save_dir, f"dictionary_{dictionary_size}" , f"layer_{layer}", f"k_{k_sparsity}")
+    save_dir = os.path.join(base_save_dir, f"dictionary_{dictionary_size}" , f"layer_{layer}", f"k_{k_sparsity}", "lr_{lr}")
     os.makedirs(save_dir, exist_ok=True)
 
     ae = trainSAE(
@@ -143,6 +144,12 @@ def main():
         help="Number of training steps. Default: 10000"
     )
     parser.add_argument(
+        "--learning_rate",
+        type=float,
+        default=1e-5,
+        help="Learning rate for training. Default: 1e-5"
+    )
+    parser.add_argument(
         "--base_save_dir",
         type=str,
         default="trained_saes",
@@ -157,7 +164,9 @@ def main():
         sae_expansion_factor=args.expansion_factor,
         device=args.device,
         training_steps=args.training_steps,
-        base_save_dir=args.base_save_dir
+        base_save_dir=args.base_save_dir,
+        warmup_steps=args.training_steps // 20,
+        lr=args.learning_rate
     )
 
 if __name__ == '__main__':
