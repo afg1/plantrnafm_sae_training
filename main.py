@@ -101,7 +101,7 @@ def train_sae_for_config(
         wandb_project=wandb_project,
         log_steps=log_steps,
         save_dir=save_dir,
-        autocast_type= torch.bfloat16
+        autocast_dtype= torch.bfloat16
     )
 
     print(f"Finished training for Layer: {layer}, k_sparsity: {k_sparsity} with dictionary {dictionary_size}. SAE saved to {save_dir}")
