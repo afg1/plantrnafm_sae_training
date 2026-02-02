@@ -42,6 +42,7 @@ def train_sae_for_config(
     activation_dim: int = 480,
     llm_batch_size: int = 64,
     sae_batch_size: int = 1024,
+    sae_expansion_factor: int = 64,
     training_steps: int = 10_000,
     lr: float = 1e-5,
     warmup_steps: int = 500,
@@ -58,7 +59,7 @@ def train_sae_for_config(
     )
 
     submodule = model.esm.encoder.layer[layer].output
-    dictionary_size = 64 * activation_dim 
+    dictionary_size = sae_expansion_factor * activation_dim 
 
     sequences = pl.read_parquet("10M_sequences.parquet")
     data = sequence_generator(sequences)
@@ -89,7 +90,7 @@ def train_sae_for_config(
         "wandb_name": f"plantrnafm-layer-{layer}-k-{k_sparsity}"
     }
 
-    save_dir = os.path.join(base_save_dir, f"layer_{layer}", f"k_{k_sparsity}")
+    save_dir = os.path.join(base_save_dir, f"dictionary_{dictionary_size}" , f"layer_{layer}", f"k_{k_sparsity}")
     os.makedirs(save_dir, exist_ok=True)
 
     ae = trainSAE(
@@ -102,7 +103,7 @@ def train_sae_for_config(
         save_dir=save_dir
     )
 
-    print(f"Finished training for Layer: {layer}, k_sparsity: {k_sparsity}. SAE saved to {save_dir}")
+    print(f"Finished training for Layer: {layer}, k_sparsity: {k_sparsity} with dictionary {dict_size}. SAE saved to {save_dir}")
     # The trainSAE function returns the trained autoencoder, but it also saves it.
     # We can return it here if needed for further processing, or just rely on the saving.
     return ae
@@ -121,6 +122,12 @@ def main():
         type=int,
         default=32,
         help="k-sparsity to train SAE for. Default: 32"
+    )
+    parser.add_argument(
+        "--expansion_factor",
+        type=int,
+        default=64,
+        help="Expansion factor for the SAE dictionary size. Default: 64"
     )
     parser.add_argument(
         "--device",
@@ -146,6 +153,7 @@ def main():
     train_sae_for_config(
         layer=args.layer,
         k_sparsity=args.sparsity,
+        sae_expansion_factor=args.expansion_factor,
         device=args.device,
         training_steps=args.training_steps,
         base_save_dir=args.base_save_dir
