@@ -96,7 +96,7 @@ def train_sae_for_config(
     device: str,
     model_name: str = "yangheng/PlantRNA-FM",
     activation_dim: int = 480,
-    llm_batch_size: int = 1024,
+    llm_batch_size: int = 64,
     sae_batch_size: int = 4096,
     sae_expansion_factor: int = 64,
     training_steps: int = 10_000,
