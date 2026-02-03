@@ -144,7 +144,7 @@ def train_sae_for_config(
         "lm_name": model_name,
         "warmup_steps": warmup_steps,
         "k": k_sparsity,
-        "wandb_name": f"plantrnafm-lr{lr}-dict{dictionary_size}-layer-{layer}-k-{k_sparsity}",
+        "wandb_name": f"fullrun-lr{lr}-dict{dictionary_size}-layer-{layer}-k-{k_sparsity}",
         "decay_start": warmup_steps+1,
     }
 
