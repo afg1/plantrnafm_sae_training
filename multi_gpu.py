@@ -6,6 +6,16 @@ from train_sae import train_sae_for_config  # Assuming your main.py is saved as 
 import torch
 import time
 
+import click
+import yaml
+from pathlib import Path
+
+def load_config(config_path):
+    """Safely loads the yaml config file."""
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
+
+
 def worker(gpu_id, configs):
     """Worker function to run training on a specific GPU."""
     time.sleep(gpu_id * 30)
@@ -23,12 +33,33 @@ def worker(gpu_id, configs):
             warmup_steps=50_000 // 20,
         )
 
-def main():
-    learning_rates = [1e-6, 1e-5, 1e-4]
-    expansions = [16, 32, 64]
-    layers = [6] #list(range(12))  # 0 to 11
-    sparsities = [32, 64, 128, 256, 512]
-    base_save_dir = ["trained_saes"]
+@click.command()
+@click.option(
+    '--config', '-c',
+    type=click.Path(exists=True, path_type=Path),
+    default="config.yaml",
+    help="Path to the YAML configuration file."
+)
+def main(config):
+    # Load the dictionary from the file path provided by click
+    params = load_config(config)
+
+    # unpacking parameters for clarity
+    learning_rates = params.get('learning_rates', [])
+    expansions = params.get('expansions', [])
+    layers = params.get('layers', [])
+    sparsities = params.get('sparsities', [])
+    base_save_dir = params.get('base_save_dir', "trained_saes")
+
+    # Example: Print to verify loading
+    print(f"Loaded configuration from {config}:")
+    print(f"  • Learning Rates: {learning_rates}")
+    print(f"  • Expansions: {expansions}")
+    print(f"  • Layers: {layers}")
+    print(f"  • Sparsities: {sparsities}")
+    print(f"  • Save Directory: {base_save_dir}")
+
+    
 
     # Generate all possible configurations
     configs = list(itertools.product(layers, sparsities, expansions, learning_rates, base_save_dir))
