@@ -67,7 +67,7 @@ def train_sae_for_config(
         "warmup_steps": warmup_steps,
         "k": k_sparsity,
         "wandb_name": f"plantrnafm-lr{lr}-dict{dictionary_size}-layer-{layer}-k-{k_sparsity}",
-        "decay_start": 40_000,
+        "decay_start": warmup_steps+1,
     }
 
     save_dir = os.path.join(base_save_dir, f"dictionary_{dictionary_size}" , f"layer_{layer}", f"k_{k_sparsity}", f"lr_{lr}")
