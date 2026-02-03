@@ -24,11 +24,12 @@ def main():
     expansions = [16, 32, 64]
     layers = list(range(13))  # 0 to 12
     sparsities = [32, 64, 128, 256, 512]
-    base_save_dir = "trained_saes"
+    base_save_dir = ["trained_saes"]
 
     # Generate all possible configurations
-    configs = list(itertools.product(layers, sparsities, expansions, learning_rates))
-
+    configs = list(itertools.product(layers, sparsities, expansions, learning_rates, base_save_dir))
+    print(f"Total configurations to run: {len(configs)}")
+    
     # Get the number of available GPUs
     num_gpus = torch.cuda.device_count()
     print(f"Found {num_gpus} GPUs. Starting parallel training...")
