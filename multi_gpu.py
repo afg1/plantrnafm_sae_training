@@ -37,11 +37,12 @@ def main():
     print(f"Found {num_gpus} GPUs. Starting parallel training...")
 
     # Split configs into chunks for each GPU
-    chunk_size = len(configs) // num_gpus
-    chunks = [configs[i:i + chunk_size] for i in range(0, len(configs), chunk_size)]
+    chunks = [[] for _ in range(num_gpus)]
+    for i, config in enumerate(configs):
+        chunks[i % num_gpus].append(config)
     print(f"Distributed configurations into {len(chunks)} chunks for GPUs.")
     print(f"Chunk sizes: {[len(chunk) for chunk in chunks]}")
-    
+    exit()
     # Start a process for each GPU
     processes = []
     for gpu_id, chunk in enumerate(chunks):
