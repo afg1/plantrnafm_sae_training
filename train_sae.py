@@ -48,7 +48,7 @@ def train_sae_for_config(
         model=model,
         submodule=submodule,
         d_submodule=activation_dim,
-        n_ctxs=int(3e4),
+        n_ctxs=int(3e2),
         ctx_len=1024,
         device=device,
         refresh_batch_size=llm_batch_size,
