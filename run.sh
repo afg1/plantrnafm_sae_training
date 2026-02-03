@@ -5,10 +5,10 @@
 
 #SBATCH --time=12:00:00   # walltime
 #SBATCH --ntasks=1   # number of tasks
-#SBATCH --cpus-per-task=32  # number of CPUs Per Task i.e if your code is multi-threaded
+#SBATCH --cpus-per-task=64  # number of CPUs Per Task i.e if your code is multi-threaded
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --gres=gpu:l40s:8
-#SBATCH --mem=256G   # memory per node
+#SBATCH --mem=512G   # memory per node
 #SBATCH -J "SAE_training"   # job name
 #SBATCH -o "out_sae_train"   # job output file
 #SBATCH -e "err_sae_train"   # job error file
