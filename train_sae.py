@@ -106,7 +106,6 @@ def train_sae_for_config(
     log_steps: int = 500,
     base_save_dir: str = "trained_saes"
 ):
-    t.cuda.set_device(int(device.split(':')[1]))
     print(f"Starting training for Layer: {layer}, k_sparsity: {k_sparsity}, Device: {device}")
 
     model = LanguageModel(
