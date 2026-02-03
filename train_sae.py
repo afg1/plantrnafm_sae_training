@@ -1,5 +1,5 @@
 from nnsight import LanguageModel
-from dictionary_learning import ActivationBuffer, tracer_kwargs
+from dictionary_learning import ActivationBuffer
 from dictionary_learning.trainers.top_k import TopKTrainer, AutoEncoderTopK
 from dictionary_learning.training import trainSAE
 from transformers import AutoModelForMaskedLM, AutoTokenizer
@@ -8,6 +8,7 @@ import torch as t
 import os
 import gc
 
+tracer_kwargs = {'scan' : False, 'validate' : False}
 
 class EsmActivationBuffer(ActivationBuffer):
     def __init__(self, *args, use_nns_output=False, **kwargs):
