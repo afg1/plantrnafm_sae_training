@@ -23,7 +23,7 @@ source .venv/bin/activate
 
 export TRACKIO_DIR=/hps/nobackup/agb/rnacentral/agreen/ARISE/mech_interp/plantrnafm_sae_training/trackio
 
-python multi_gpu.py
+python multi_gpu.py --config full_training_config.yaml
 
 
 # learning_rates=("1e-8" "1e-7" "1e-6" "1e-5" "1e-4")
