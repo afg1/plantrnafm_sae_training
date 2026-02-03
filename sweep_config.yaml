@@ -1,0 +1,18 @@
+learning_rates:
+  - 1.0e-6
+  - 1.0e-5
+  - 1.0e-4
+expansions:
+  - 16
+  - 32
+  - 64
+layers:
+  - 6  
+sparsities:
+  - 32
+  - 64
+  - 128
+  - 256
+  - 512
+base_save_dir: 
+  - "trained_saes"
