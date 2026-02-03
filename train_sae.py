@@ -159,7 +159,7 @@ def train_sae_for_config(
         wandb_project=wandb_project,
         log_steps=log_steps,
         save_dir=save_dir,
-        autocast_dtype= torch.bfloat16,
+        autocast_dtype= t.bfloat16,
         normalize_activations=True,
     )
 
