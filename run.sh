@@ -23,8 +23,6 @@ source .venv/bin/activate
 
 export TRACKIO_DIR=/hps/nobackup/agb/rnacentral/agreen/ARISE/mech_interp/plantrnafm_sae_training/trackio
 
-trackio show --host 0.0.0.0 &
-
 python multi_gpu.py
 
 
