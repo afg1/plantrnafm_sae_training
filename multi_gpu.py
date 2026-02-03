@@ -6,18 +6,20 @@ from train_sae import train_sae_for_config  # Assuming your main.py is saved as 
 import torch
 
 
-def worker(gpu_id, config):
+def worker(gpu_id, configs):
     """Worker function to run training on a specific GPU."""
-    layer, sparsity, expansion, lr, base_save_dir = config
-    train_sae_for_config(
-        layer=layer,
-        k_sparsity=sparsity,
-        device=f"cuda:{gpu_id}",
-        sae_expansion_factor=expansion,
-        training_steps=500000,
-        lr=lr,
-        base_save_dir=base_save_dir,
-    )
+    for config in configs:
+        layer, sparsity, expansion, lr, base_save_dir = config
+        
+        train_sae_for_config(
+            layer=layer,
+            k_sparsity=sparsity,
+            device=f"cuda:{gpu_id}",
+            sae_expansion_factor=expansion,
+            training_steps=500000,
+            lr=lr,
+            base_save_dir=base_save_dir,
+        )
 
 def main():
     learning_rates = [1e-6, 1e-5, 1e-4]
@@ -37,7 +39,9 @@ def main():
     # Split configs into chunks for each GPU
     chunk_size = len(configs) // num_gpus
     chunks = [configs[i:i + chunk_size] for i in range(0, len(configs), chunk_size)]
-
+    print(f"Distributed configurations into {len(chunks)} chunks for GPUs.")
+    print(f"Chunk sizes: {[len(chunk) for chunk in chunks]}")
+    
     # Start a process for each GPU
     processes = []
     for gpu_id, chunk in enumerate(chunks):
