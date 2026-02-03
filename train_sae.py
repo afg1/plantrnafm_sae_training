@@ -105,6 +105,7 @@ def train_sae_for_config(
     log_steps: int = 500,
     base_save_dir: str = "trained_saes"
 ):
+    t.cuda.set_device(int(device.split(':')[1]))
     print(f"Starting training for Layer: {layer}, k_sparsity: {k_sparsity}, Device: {device}")
 
     model = LanguageModel(
@@ -112,8 +113,7 @@ def train_sae_for_config(
         device_map=device,
         automodel=AutoModelForMaskedLM
     )
-
-    submodule = model.esm.encoder.layer[layer].output
+    submodule = model.esm.encoder.layer[layer]
     dictionary_size = sae_expansion_factor * activation_dim 
 
     sequences = pl.read_parquet("all_transcripts_1024.parquet")
