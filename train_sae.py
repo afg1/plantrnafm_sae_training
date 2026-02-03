@@ -40,7 +40,7 @@ def train_sae_for_config(
     submodule = model.esm.encoder.layer[layer].output
     dictionary_size = sae_expansion_factor * activation_dim 
 
-    sequences = pl.read_parquet("10M_sequences.parquet")
+    sequences = pl.read_parquet("all_transcripts_1024.parquet")
     data = sequence_generator(sequences)
 
     buffer = ActivationBuffer(
