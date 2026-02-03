@@ -42,7 +42,6 @@ def main():
         chunks[i % num_gpus].append(config)
     print(f"Distributed configurations into {len(chunks)} chunks for GPUs.")
     print(f"Chunk sizes: {[len(chunk) for chunk in chunks]}")
-    exit()
     # Start a process for each GPU
     processes = []
     for gpu_id, chunk in enumerate(chunks):
