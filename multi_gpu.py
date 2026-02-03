@@ -4,10 +4,11 @@ import itertools
 import torch.multiprocessing as mp
 from train_sae import train_sae_for_config  # Assuming your main.py is saved as train_sae.py
 import torch
-
+import time
 
 def worker(gpu_id, configs):
     """Worker function to run training on a specific GPU."""
+    time.sleep(gpu_id * 30)
     for config in configs:
         layer, sparsity, expansion, lr, base_save_dir = config
         
