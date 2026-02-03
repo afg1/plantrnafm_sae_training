@@ -5,7 +5,7 @@
 
 #SBATCH --time=12:00:00   # walltime
 #SBATCH --ntasks=1   # number of tasks
-#SBATCH --cpus-per-task= 32  # number of CPUs Per Task i.e if your code is multi-threaded
+#SBATCH --cpus-per-task=32  # number of CPUs Per Task i.e if your code is multi-threaded
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --gres=gpu:l40s:8
 #SBATCH --mem=64G   # memory per node
