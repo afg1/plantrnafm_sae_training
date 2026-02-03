@@ -70,7 +70,7 @@ def train_sae_for_config(
         "decay_start": 40_000,
     }
 
-    save_dir = os.path.join(base_save_dir, f"dictionary_{dictionary_size}" , f"layer_{layer}", f"k_{k_sparsity}", "lr_{lr}")
+    save_dir = os.path.join(base_save_dir, f"dictionary_{dictionary_size}" , f"layer_{layer}", f"k_{k_sparsity}", f"lr_{lr}")
     os.makedirs(save_dir, exist_ok=True)
 
     ae = trainSAE(
