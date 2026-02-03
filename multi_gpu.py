@@ -17,9 +17,10 @@ def worker(gpu_id, configs):
             k_sparsity=sparsity,
             device=f"cuda:{gpu_id}",
             sae_expansion_factor=expansion,
-            training_steps=500000,
+            training_steps=50000,
             lr=lr,
             base_save_dir=base_save_dir,
+            warmup_steps=50_000 // 20,
         )
 
 def main():
