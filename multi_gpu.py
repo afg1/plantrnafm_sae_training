@@ -24,7 +24,7 @@ def worker(gpu_id, configs):
 def main():
     learning_rates = [1e-6, 1e-5, 1e-4]
     expansions = [16, 32, 64]
-    layers = list(range(13))  # 0 to 12
+    layers = list(range(12))  # 0 to 11
     sparsities = [32, 64, 128, 256, 512]
     base_save_dir = ["trained_saes"]
 
