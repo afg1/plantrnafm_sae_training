@@ -1,3 +1,4 @@
+import gc
 import os
 import torch
 import polars as pl
@@ -113,66 +114,75 @@ def evaluate_sae(
     sequences: pl.DataFrame,
     layer: int,
     device: str,
-    batch_size: int = 32,
+    batch_size: int = 16,  # Reduced from 32
     max_sequences: Optional[int] = None,
 ) -> dict:
-    """
-    Full evaluation of an SAE on held-out sequences.
-    """
+    """Memory-efficient SAE evaluation."""
+    
     if max_sequences:
         sequences = sequences.head(max_sequences)
     
     all_l2 = []
-    all_fve_num = []  # residual variance
-    all_fve_denom = []  # total variance
-    all_l0 = []
-    all_features_fired = []
+    all_fve_num = []
+    all_fve_denom = []
     total_tokens = 0
+    
+    # Track which features fired (on CPU, as numpy)
+    n_features = sae.encoder.weight.shape[0]  # or however you access dict_size
+    features_ever_fired = np.zeros(n_features, dtype=bool)
     
     seq_list = sequences['sequence'].to_list()
     
     for i in tqdm(range(0, len(seq_list), batch_size), desc="Evaluating"):
         batch_seqs = seq_list[i:i + batch_size]
         
-        activations, attention_mask = get_activations_batch(
-            model, batch_seqs, layer, device
-        )
-        
-        n_tokens = attention_mask.sum().item()
-        metrics = compute_reconstruction_metrics(sae, activations, attention_mask)
-        
-        all_l2.append(metrics["l2_loss"] * n_tokens)
-        all_l0.append(metrics["l0"] * n_tokens)
-        all_features_fired.append(metrics["features_fired"])
-        
-        # For FVE, we need to accumulate properly
-        mask = attention_mask.bool()
-        flat_acts = activations[mask]
         with torch.no_grad():
-            recon = sae(flat_acts)[0]
-            all_fve_num.append(((flat_acts - recon) ** 2).sum().item())
-            all_fve_denom.append(((flat_acts - flat_acts.mean(dim=0)) ** 2).sum().item())
+            activations, attention_mask = get_activations_batch(
+                model, batch_seqs, layer, device
+            )
+            
+            mask = attention_mask.bool()
+            flat_acts = activations[mask]
+            n_tokens = flat_acts.shape[0]
+            
+            # Get reconstructions
+            output = sae(flat_acts)
+            reconstructions = output[0]
+            feature_acts = output[1]
+            
+            # Compute metrics immediately, store as Python floats
+            l2 = ((flat_acts - reconstructions) ** 2).sum().item()
+            fve_num = l2  # residual variance
+            fve_denom = ((flat_acts - flat_acts.mean(dim=0)) ** 2).sum().item()
+            
+            # Track which features fired (move to CPU immediately)
+            batch_fired = (feature_acts != 0).any(dim=0).cpu().numpy()
+            features_ever_fired |= batch_fired
+            
+            all_l2.append(l2)
+            all_fve_num.append(fve_num)
+            all_fve_denom.append(fve_denom)
+            total_tokens += n_tokens
+            
+            # Explicit cleanup
+            del activations, attention_mask, flat_acts, reconstructions, feature_acts, output
         
-        total_tokens += n_tokens
+        # Clear CUDA cache periodically
+        if i % (batch_size * 10) == 0:
+            torch.cuda.empty_cache()
     
-    # Aggregate metrics
+    # Final metrics
     mean_l2 = sum(all_l2) / total_tokens
-    mean_l0 = sum(all_l0) / total_tokens
     fve = 1 - (sum(all_fve_num) / sum(all_fve_denom))
-    
-    # Dead features: features that never fired across entire eval set
-    all_fired = torch.stack(all_features_fired).any(dim=0)
-    dead_feature_pct = (1 - all_fired.float().mean()).item() * 100
-    n_dead_features = (~all_fired).sum().item()
+    n_dead = (~features_ever_fired).sum()
     
     return {
         "l2_loss": mean_l2,
         "fve": fve,
-        "l0": mean_l0,
-        "dead_feature_pct": dead_feature_pct,
-        "n_dead_features": n_dead_features,
-        "n_features": all_fired.shape[0],
-        "total_tokens_evaluated": total_tokens,
+        "dead_feature_pct": (n_dead / n_features) * 100,
+        "n_dead_features": int(n_dead),
+        "n_features": n_features,
+        "total_tokens": total_tokens,
     }
 
 
@@ -252,7 +262,7 @@ def main():
                 layer=config["layer"],
                 device=device,
                 batch_size=32,
-                max_sequences=10_000,  # Use subset for faster eval, increase as needed
+                max_sequences=5000,  # Use subset for faster eval, increase as needed
             )
             
             results.append({
@@ -262,13 +272,16 @@ def main():
             
             print(f"  FVE: {metrics['fve']:.4f}, L2: {metrics['l2_loss']:.4f}, "
                   f"Dead: {metrics['dead_feature_pct']:.1f}%")
-            
+            del sae
+            torch.cuda.empty_cache()
+            gc.collect()
         except Exception as e:
             print(f"  Failed: {e}")
             results.append({
                 **config,
                 "error": str(e),
             })
+        
     
     # Save results
     results_df = pl.DataFrame(results)
