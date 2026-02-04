@@ -136,6 +136,7 @@ def evaluate_sae(
             
             mask = attention_mask.bool()
             flat_acts = activations[mask]
+            print(flat_acts.shape) # should be 1024*batch_size x 480 ?
 
             if normalize:
                 norms = flat_acts.norm(dim=-1, keepdim=True)
@@ -146,9 +147,9 @@ def evaluate_sae(
             n_tokens = flat_acts_input.shape[0]
             
             # Get reconstructions
-            output = sae(flat_acts_input)
-            reconstructions = output[0]
-            feature_acts = output[1]
+            output = sae(activations, output_features=True)
+            reconstructions = output[0][mask]
+            feature_acts = output[1][mask]
             
             # Compute metrics immediately, store as Python floats
             l2 = ((flat_acts_input - reconstructions) ** 2).sum().item()
