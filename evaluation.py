@@ -262,7 +262,7 @@ def main():
                 layer=config["layer"],
                 device=device,
                 batch_size=32,
-                max_sequences=5000,  # Use subset for faster eval, increase as needed
+                max_sequences=50_000,  # Use subset for faster eval, increase as needed
             )
             
             results.append({
