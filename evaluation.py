@@ -109,6 +109,7 @@ def evaluate_sae(
     device: str,
     batch_size: int = 16,  # Reduced from 32
     max_sequences: Optional[int] = None,
+    normalize: bool = True,
 ) -> dict:
     """Memory-efficient SAE evaluation."""
     
@@ -135,6 +136,13 @@ def evaluate_sae(
             
             mask = attention_mask.bool()
             flat_acts = activations[mask]
+
+            if normalize:
+                norms = flat_acts.norm(dim=-1, keepdim=True)
+                flat_acts_input = flat_acts / (norms + 1e-8)
+            else:
+                flat_acts_input = flat_acts
+
             n_tokens = flat_acts.shape[0]
             
             # Get reconstructions
