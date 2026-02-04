@@ -109,7 +109,7 @@ def evaluate_sae(
     device: str,
     batch_size: int = 16,  # Reduced from 32
     max_sequences: Optional[int] = None,
-    normalize: bool = True,
+    normalize: bool = False,
 ) -> dict:
     """Memory-efficient SAE evaluation."""
     
@@ -143,17 +143,17 @@ def evaluate_sae(
             else:
                 flat_acts_input = flat_acts
 
-            n_tokens = flat_acts.shape[0]
+            n_tokens = flat_acts_input.shape[0]
             
             # Get reconstructions
-            output = sae(flat_acts)
+            output = sae(flat_acts_input)
             reconstructions = output[0]
             feature_acts = output[1]
             
             # Compute metrics immediately, store as Python floats
-            l2 = ((flat_acts - reconstructions) ** 2).sum().item()
+            l2 = ((flat_acts_input - reconstructions) ** 2).sum().item()
             fve_num = l2  # residual variance
-            fve_denom = ((flat_acts - flat_acts.mean(dim=0)) ** 2).sum().item()
+            fve_denom = ((flat_acts_input - flat_acts_input.mean(dim=0)) ** 2).sum().item()
             
             # Track which features fired (move to CPU immediately)
             batch_fired = (feature_acts != 0).any(dim=0).cpu().numpy()
@@ -165,7 +165,7 @@ def evaluate_sae(
             total_tokens += n_tokens
             
             # Explicit cleanup
-            del activations, attention_mask, flat_acts, reconstructions, feature_acts, output
+            del activations, attention_mask, flat_acts, flat_acts_input, reconstructions, feature_acts, output
         
         # Clear CUDA cache periodically
         if i % (batch_size * 10) == 0:
