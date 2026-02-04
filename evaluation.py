@@ -8,22 +8,15 @@ from tqdm import tqdm
 from nnsight import LanguageModel
 from transformers import AutoModelForMaskedLM
 from dictionary_learning.trainers.top_k import AutoEncoderTopK
+from dictionary_learning import utils
+
 from typing import Optional
 import json
 
 
 def load_sae(save_dir: str, device: str) -> AutoEncoderTopK:
     """Load a trained SAE from a directory."""
-    # dictionary_learning typically saves as ae.pt
-    ae_path = os.path.join(save_dir, "ae.pt")
-    if not os.path.exists(ae_path):
-        # Try alternative naming
-        for fname in os.listdir(save_dir):
-            if fname.endswith(".pt"):
-                ae_path = os.path.join(save_dir, fname)
-                break
-    
-    ae = torch.load(ae_path, map_location=device)
+    ae, config = utils.load_dictionary(save_dir, device=device)
     ae.eval()
     return ae
 
