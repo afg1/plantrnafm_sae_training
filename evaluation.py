@@ -121,7 +121,7 @@ def evaluate_sae(
     
     if max_sequences:
         sequences = sequences.head(max_sequences)
-    
+    print(sequences)
     all_l2 = []
     all_fve_num = []
     all_fve_denom = []
@@ -206,9 +206,9 @@ def discover_trained_saes(base_dir: str) -> list[dict]:
                 
                 for lr_dir in k_dir.glob("lr_*"):
                     lr = float(lr_dir.name.split("_")[1])
-                    
+                    trainer_dir = lr_dir / "trainer_0"
                     # Check if SAE file exists
-                    if any(lr_dir.glob("*.pt")):
+                    if any(trainer_dir.glob("*.pt")):
                         saes.append({
                             "path": str(lr_dir),
                             "dict_size": dict_size,
