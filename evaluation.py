@@ -6,7 +6,7 @@ from pathlib import Path
 from tqdm import tqdm
 from nnsight import LanguageModel
 from transformers import AutoModelForMaskedLM
-from dictionary_learning.dictionary import AutoEncoderTopK
+from dictionary_learning.trainers.top_k import AutoEncoderTopK
 from typing import Optional
 import json
 
