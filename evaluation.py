@@ -136,7 +136,6 @@ def evaluate_sae(
             
             mask = attention_mask.bool()
             flat_acts = activations[mask]
-            print(flat_acts.shape) # should be 1024*batch_size x 480 ?
 
             if normalize:
                 norms = flat_acts.norm(dim=-1, keepdim=True)
