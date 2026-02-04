@@ -114,7 +114,6 @@ def evaluate_sae(
     
     if max_sequences:
         sequences = sequences.head(max_sequences)
-    print(sequences)
     all_l2 = []
     all_fve_num = []
     all_fve_denom = []
