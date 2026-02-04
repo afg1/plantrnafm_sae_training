@@ -210,7 +210,7 @@ def discover_trained_saes(base_dir: str) -> list[dict]:
                     # Check if SAE file exists
                     if any(trainer_dir.glob("*.pt")):
                         saes.append({
-                            "path": str(lr_dir),
+                            "path": str(trainer_dir),
                             "dict_size": dict_size,
                             "layer": layer,
                             "k": k,
